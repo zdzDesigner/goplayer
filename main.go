@@ -63,6 +63,7 @@ func play(name string) bool {
 	if err != nil {
 		return false
 	}
+
 	// source, err := getSource("output.mp3")
 	fmt.Println(source)
 	file, err := os.Open(source)

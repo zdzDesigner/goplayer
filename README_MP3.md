@@ -1,10 +1,17 @@
+```sh
+# 查看音频信息,当前音频 采样率较低
+ffprobe 162601200257970297935.mp3
+
 Input #0, mp3, from '162601200257970297935.mp3':
   Metadata:
     encoder         : Lavf58.41.100
   Duration: 00:02:24.72, start: 0.050113, bitrate: 64 kb/s
     Stream #0:0: Audio: mp3, 22050 Hz, stereo, fltp, 64 kb/s
+```
 
-
+```sh
+# 查看音频信息,当前音频信息较全
+ffprobe Lame_Drivers_-_01_-_Frozen_Egg.mp3
 
 Input #0, mp3, from 'Lame_Drivers_-_01_-_Frozen_Egg.mp3':
   Metadata:
@@ -30,3 +37,4 @@ Input #0, mp3, from 'Lame_Drivers_-_01_-_Frozen_Egg.mp3':
     Stream #0:1: Video: mjpeg (Baseline), yuvj444p(pc, bt470bg/unknown/unknown), 300x300 [SAR 72:72 DAR 1:1], 90k tbr, 90k tbn, 90k tbc (attached pic)
     Metadata:
       comment         : Cover (front)
+```
