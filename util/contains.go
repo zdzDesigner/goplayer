@@ -37,7 +37,6 @@ func equal(expected, actual interface{}) bool {
 	}
 
 	return reflect.DeepEqual(expected, actual)
-
 }
 
 // CompareFunc ..
