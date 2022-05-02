@@ -13,16 +13,6 @@ import (
 
 var names []string // 歌曲播放地址
 
-// 获取当前歌曲索引地址
-func Index(name string) int {
-	for i, n := range names {
-		if name == n {
-			return i
-		}
-	}
-	return -1
-}
-
 // 获取歌曲列表
 func List() []string {
 	var err error

@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"player/conf"
 	"player/ui/cuidecor"
 	"time"
 
@@ -37,9 +38,11 @@ func (l *Layout) ListVIndex(y int) (err error) {
 
 func (l *Layout) logView() (err error) {
 	maxX, maxY := l.g.Size()
-	if v, err := l.g.SetView(LogView, 0, maxY-5, maxX-1, maxY-1); err != nil {
+	v, err := l.g.SetView(LogView, 0, maxY-5, maxX-1, maxY-1)
+	if err != nil {
 		v.Title = LogView
 	}
+	// Log(conf.FileName(l.names[0]))
 	return
 }
 
@@ -49,6 +52,7 @@ func (l *Layout) listView() (err error) {
 	if err != nil {
 		return
 	}
+	v.Title = "歌曲列表"
 	l.listV = v // 添加listV视图
 
 	// 滚动到底部
@@ -59,7 +63,7 @@ func (l *Layout) listView() (err error) {
 	v.Clear()
 	for _, name := range l.names {
 		// fmt.Fprintln(v, name, i) //  写入到stdout
-		fmt.Fprintln(v, name) //  写入到stdout
+		fmt.Fprintln(v, conf.FileName(name)) //  写入到stdout
 	}
 	_, err = l.g.SetCurrentView(ListView)
 	return

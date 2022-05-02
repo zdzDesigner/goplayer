@@ -20,9 +20,9 @@ func main() {
 	// fmt.Println(names)
 	event.Evt.On("choose", func(name string) {
 		app.Force <- struct{}{} // 强制结束
-		go app.Music(name)
+		go app.Music(conf.FilePath(name))
 
-		ui.Log(fmt.Sprintln(name, "----"))
+		ui.Log(fmt.Sprintln(conf.ParsePrefix(name), "..."))
 	})
 
 	event.Evt.On("next", func(name string) {
@@ -31,7 +31,7 @@ func main() {
 		go app.Music(name)
 
 		ui.Nui.Layout.ListVIndex(index)
-		ui.Log(fmt.Sprintln(name, "----"))
+		ui.Log(fmt.Sprintln(name, "..."))
 	})
 
 	go app.Music(names[0])
