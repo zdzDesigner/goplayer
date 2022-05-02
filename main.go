@@ -26,11 +26,11 @@ func main() {
 	})
 
 	event.Evt.On("next", func(name string) {
-		index := conf.Index(name)
-		name = names[index+1]
+		index := conf.Index(name) + 1
+		name = names[index]
 		go app.Music(name)
 
-		ui.Nui.Layout.ListVNext()
+		ui.Nui.Layout.ListVIndex(index)
 		ui.Log(fmt.Sprintln(name, "----"))
 	})
 

@@ -43,6 +43,10 @@ func keyUp(_ *gocui.Gui, v *gocui.View) (err error) {
 	return
 }
 
+func KeyIndex(_ *gocui.Gui, v *gocui.View, y int) (err error) {
+	return v.SetCursor(0, y)
+}
+
 func KeyDown(_ *gocui.Gui, v *gocui.View) (err error) {
 	listLength := len(conf.List()) - 1
 	if v == nil {

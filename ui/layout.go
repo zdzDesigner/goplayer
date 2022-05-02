@@ -30,9 +30,9 @@ func (l *Layout) Manage(*gocui.Gui) (err error) {
 	return
 }
 
-func (l *Layout) ListVNext() (err error) {
+func (l *Layout) ListVIndex(y int) (err error) {
 	cuidecor.ForceUpdate(l.g)()
-	return KeyDown(l.g, l.listV)
+	return KeyIndex(l.g, l.listV, y)
 }
 
 func (l *Layout) logView() (err error) {
