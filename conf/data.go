@@ -11,6 +11,32 @@ import (
 	"strings"
 )
 
+var names []string // 歌曲播放地址
+
+// 获取当前歌曲索引地址
+func Index(name string) int {
+	for i, n := range names {
+		if name == n {
+			return i
+		}
+	}
+	return -1
+}
+
+// 获取歌曲列表
+func List() []string {
+	var err error
+	if len(names) > 0 {
+		return names
+	}
+	names, err = AudioList()
+	if err != nil {
+		panic("get song list fail")
+	}
+	return names
+}
+
+// 音频列表
 func AudioList() (names []string, err error) {
 	exts := []string{"mp3", "wav", "wma", "ape"}
 	_, list, err := GetIgnoreDetail()
@@ -27,6 +53,7 @@ func AudioList() (names []string, err error) {
 	return
 }
 
+// 深度递归文件夹
 func deepDir(dir string, fn func(string, string)) (err error) {
 	fs, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -41,7 +68,6 @@ func deepDir(dir string, fn func(string, string)) (err error) {
 		}
 		fn(f.Name(), dir)
 	}
-
 	return
 }
 

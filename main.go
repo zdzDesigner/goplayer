@@ -1,33 +1,41 @@
 package main
 
 import (
+	"fmt"
 	"player/app"
 	"player/conf"
+	"player/event"
 	"player/ui"
 )
 
 func main() {
-	var err error // currIndex = make(chan int)
-	// ch  = make(chan struct{}, 1) // 带缓冲区的通道, 允许写入和读出
-	// end       = make(chan struct{})
-	//
+	var err error
 	defer func() {
 		if err != nil {
 			panic(err)
 		}
 	}()
-	names, err := conf.AudioList()
-	if err != nil {
-		return
-	}
+
+	names := conf.List()
 	// fmt.Println(names)
+	event.Evt.On("choose", func(name string) {
+		app.Force <- struct{}{} // 强制结束
+		go app.Music(name)
+
+		ui.Log(fmt.Sprintln(name, "----"))
+	})
+
+	event.Evt.On("next", func(name string) {
+		index := conf.Index(name)
+		name = names[index+1]
+		go app.Music(name)
+
+		ui.Nui.Layout.ListVNext()
+		ui.Log(fmt.Sprintln(name, "----"))
+	})
+
 	go app.Music(names[0])
-	// //
-	// // // fmt.Println("pid::", os.Getpid())
-	// currIndex <- app.Control(ch, 0, names)
-	// fmt.Println("currIndex first::", currIndex)
-	//
-	// // play(names[0], ch)
-	// <-end
+
+	// 视图
 	ui.View(names)
 }

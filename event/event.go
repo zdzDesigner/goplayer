@@ -1,9 +1,9 @@
-package ui
+package event
 
-var PS PubSuber
+var Evt PubSuber
 
 func init() {
-	PS = NewPubSub()
+	Evt = NewPubSub()
 }
 
 type Handler func(string)
@@ -35,14 +35,4 @@ func NewPubSub() PubSuber {
 	return &PubSub{
 		pool: make(map[string][]Handler),
 	}
-}
-
-func Do() {
-	pubsub := NewPubSub()
-
-	pubsub.On("key", func(str string) {
-		Log(str)
-	})
-
-	pubsub.Emit("key", "handler ccc")
 }

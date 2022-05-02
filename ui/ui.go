@@ -7,44 +7,45 @@ import (
 	"github.com/jroimartin/gocui"
 )
 
+var Nui *UI
+
 func View(names []string) {
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		log.Panicln(err)
 	}
 	defer g.Close()
-	ui := NewUI(g)
-	ui.Log()
-	ui.ForceUpdate()
-	ui.Layout(names)
-	ui.Keybind()
+	Nui = NewUI(g)
+	Nui.Log()
+	Nui.ForceUpdate()
+	Nui.layout(names)
+	Nui.keybind()
 
-	// go update(g)
-	// gocui.KeyCtrlC  mod + ctrl + c
-	// if err := g.SetKeybinding("hello", gocui.KeyEsc, gocui.ModNone, quit); err != nil {
-	// 绑定退出
+	// <-channel 主循环
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
 		log.Panicln(err)
 	}
 }
 
 func NewUI(g *gocui.Gui) *UI {
-	return &UI{g}
+	return &UI{g: g}
 }
 
 type UI struct {
-	g *gocui.Gui
+	g      *gocui.Gui
+	Layout *Layout
 }
 
-func (ui *UI) Layout(names []string) {
-	ui.g.SetManagerFunc(NewLayout(ui.g, names).Manage)
+func (ui *UI) layout(names []string) {
+	ui.Layout = NewLayout(ui.g, names)
+	ui.g.SetManagerFunc(ui.Layout.Manage)
 }
 
 func (ui *UI) ForceUpdate() {
 	cuidecor.Update = cuidecor.ForceUpdate(ui.g)
 }
 
-func (ui *UI) Keybind() {
+func (ui *UI) keybind() {
 	Keybind(ui.g)
 }
 

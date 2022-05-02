@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"player/ui/cuidecor"
 	"time"
 
 	"github.com/jroimartin/gocui"
@@ -14,11 +15,12 @@ var (
 )
 
 func NewLayout(g *gocui.Gui, names []string) *Layout {
-	return &Layout{g, names}
+	return &Layout{g: g, names: names}
 }
 
 type Layout struct {
 	g     *gocui.Gui
+	listV *gocui.View
 	names []string
 }
 
@@ -26,6 +28,11 @@ func (l *Layout) Manage(*gocui.Gui) (err error) {
 	l.logView()
 	l.listView()
 	return
+}
+
+func (l *Layout) ListVNext() (err error) {
+	cuidecor.ForceUpdate(l.g)()
+	return KeyDown(l.g, l.listV)
 }
 
 func (l *Layout) logView() (err error) {
@@ -42,35 +49,19 @@ func (l *Layout) listView() (err error) {
 	if err != nil {
 		return
 	}
-	// v.Title = "view title"
-	// v.Wrap = true
+	l.listV = v // 添加listV视图
+
 	// 滚动到底部
 	v.Highlight = true
 	v.FgColor = gocui.ColorBlue
-	// v.SelFgColor = gocui.ColorYellow
 	v.SelFgColor = gocui.AttrBold + gocui.ColorYellow
-	// time.Sleep(time.Second * 3)
+
 	v.Clear()
-	// return
-
-	// fmt.Println(names)
-	// return
-	// dir, _ := os.Getwd()
-	// tardir := filepath.Join(dir, "../../")
-	// fs, _ := ioutil.ReadDir(tardir)
-
-	// count = count + 1
-	// stdout(g, fmt.Sprint(count))
-	// stdout(g, fmt.Sprint(len(fs)))
 	for _, name := range l.names {
 		// fmt.Fprintln(v, name, i) //  写入到stdout
 		fmt.Fprintln(v, name) //  写入到stdout
 	}
-	// cuidecor.Update()
-	// update(g)
-	// fmt.Fprintln(v, "Hello world!")
 	_, err = l.g.SetCurrentView(ListView)
-
 	return
 }
 

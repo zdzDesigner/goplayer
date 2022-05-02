@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"player/conf"
+	"player/event"
 
 	"github.com/jroimartin/gocui"
 )
@@ -42,13 +43,8 @@ func keyUp(_ *gocui.Gui, v *gocui.View) (err error) {
 	return
 }
 
-func keyDown(_ *gocui.Gui, v *gocui.View) (err error) {
-	names, err := conf.AudioList()
-	if err != nil {
-		return
-	}
-
-	listLength := len(names) - 1
+func KeyDown(_ *gocui.Gui, v *gocui.View) (err error) {
+	listLength := len(conf.List()) - 1
 	if v == nil {
 		return errors.New("keydown view nil")
 	}
@@ -76,7 +72,7 @@ func enter(_ *gocui.Gui, v *gocui.View) (err error) {
 	_, cy := v.Cursor()
 	cyline, _ := v.Line(cy)
 	// Log(cyline)
-	PS.Emit("play", cyline)
+	event.Evt.Emit("choose", cyline)
 	return
 }
 
@@ -96,7 +92,7 @@ func Keybind(g *gocui.Gui) {
 	if err = g.SetKeybinding(ListView, 'k', gocui.ModNone, keyUp); err != nil {
 		return
 	}
-	if err = g.SetKeybinding(ListView, 'j', gocui.ModNone, keyDown); err != nil {
+	if err = g.SetKeybinding(ListView, 'j', gocui.ModNone, KeyDown); err != nil {
 		return
 	}
 	if err = g.SetKeybinding(ListView, gocui.KeyCtrlG, gocui.ModNone, end); err != nil {
