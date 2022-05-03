@@ -19,7 +19,7 @@ func RegistLogger(g *gocui.Gui) Logger {
 
 // DOTO:: 记录日志列表, 可以上下滚动查询
 func stdout(g *gocui.Gui, log string) (err error) {
-	v, err := g.View(LogView)
+	v, err := g.View(CurView)
 	if err != nil {
 		return
 	}

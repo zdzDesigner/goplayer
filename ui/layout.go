@@ -10,8 +10,8 @@ import (
 
 var (
 	count    = 0
-	LogView  = "Log"
-	ListView = "List"
+	CurView  = "Current"
+	ListView = "Song List"
 )
 
 func NewLayout(g *gocui.Gui, names []string) *Layout {
@@ -37,9 +37,9 @@ func (l *Layout) CursorIndex(y int) (err error) {
 
 func (l *Layout) logView() (err error) {
 	maxX, maxY := l.g.Size()
-	v, err := l.g.SetView(LogView, 0, maxY-5, maxX-1, maxY-1)
+	v, err := l.g.SetView(CurView, 0, maxY-5, maxX-1, maxY-1)
 	if err != nil {
-		v.Title = LogView
+		v.Title = CurView
 	}
 	// Log(conf.FileName(l.names[0]))
 	return
@@ -51,7 +51,7 @@ func (l *Layout) listView() (err error) {
 	if err != nil {
 		return
 	}
-	v.Title = "歌曲列表"
+	v.Title = ListView
 	l.listV = v // 添加listV视图
 
 	// 滚动到底部

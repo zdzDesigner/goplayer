@@ -3,6 +3,7 @@ package conf
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -39,6 +40,10 @@ func AudioList() (names []string, err error) {
 			names = append(names, fmt.Sprintf("%s/%s", dir, name))
 		}
 	})
+
+	if len(names) == 0 {
+		err = errors.New("no music file in current dir")
+	}
 
 	return
 }
