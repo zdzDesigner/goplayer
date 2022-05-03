@@ -31,3 +31,12 @@ func Index(name string) int {
 	}
 	return -1
 }
+
+// 下一个
+func NextIndex(name string) int {
+	index := Index(name) + 1
+	if index == len(names) {
+		index = 0
+	}
+	return index
+}

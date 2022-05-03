@@ -22,16 +22,16 @@ func main() {
 		app.Force <- struct{}{} // 强制结束
 		go app.Music(conf.FilePath(name))
 
-		ui.Log(fmt.Sprintln(conf.ParsePrefix(name), "..."))
+		ui.Log(fmt.Sprintln(conf.FileName(name), "..."))
 	})
 
 	event.Evt.On("next", func(name string) {
-		index := conf.Index(name) + 1
+		index := conf.NextIndex(name)
 		name = names[index]
 		go app.Music(name)
 
-		ui.Nui.Layout.ListVIndex(index)
-		ui.Log(fmt.Sprintln(name, "..."))
+		ui.Nui.Layout.CursorIndex(index)
+		ui.Log(fmt.Sprintln(conf.FileName(name), "...", index))
 	})
 
 	go app.Music(names[0])

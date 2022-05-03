@@ -1,4 +1,4 @@
-package cuidecor
+package ui
 
 import "github.com/jroimartin/gocui"
 

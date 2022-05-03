@@ -2,7 +2,8 @@ package ui
 
 import (
 	"log"
-	"player/ui/cuidecor"
+	"player/conf"
+	"time"
 
 	"github.com/jroimartin/gocui"
 )
@@ -16,10 +17,14 @@ func View(names []string) {
 	}
 	defer g.Close()
 	Nui = NewUI(g)
-	Nui.Log()
+	Nui.RegistLog()
 	Nui.ForceUpdate()
 	Nui.layout(names)
 	Nui.keybind()
+	go func() {
+		time.Sleep(time.Microsecond * 10)
+		Nui.Log(conf.FileName(names[0]))
+	}()
 
 	// <-channel 主循环
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
@@ -34,6 +39,8 @@ func NewUI(g *gocui.Gui) *UI {
 type UI struct {
 	g      *gocui.Gui
 	Layout *Layout
+	Log    Logger
+	Update Updater
 }
 
 func (ui *UI) layout(names []string) {
@@ -42,13 +49,15 @@ func (ui *UI) layout(names []string) {
 }
 
 func (ui *UI) ForceUpdate() {
-	cuidecor.Update = cuidecor.ForceUpdate(ui.g)
+	ui.Update = ForceUpdate(ui.g)
+	Update = ui.Update
 }
 
 func (ui *UI) keybind() {
 	Keybind(ui.g)
 }
 
-func (ui *UI) Log() {
-	Log = RegistLogger(ui.g)
+func (ui *UI) RegistLog() {
+	ui.Log = RegistLogger(ui.g)
+	Log = ui.Log
 }

@@ -2,6 +2,7 @@ package app
 
 import (
 	"os"
+	"player/conf"
 	"player/event"
 	"time"
 
@@ -14,7 +15,7 @@ var Force chan struct{}
 
 func Music(name string) {
 	if Play(name) {
-		event.Evt.Emit("next", name)
+		event.Evt.Emit("next", conf.FileName(name))
 	}
 }
 

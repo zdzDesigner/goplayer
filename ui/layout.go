@@ -3,7 +3,6 @@ package ui
 import (
 	"fmt"
 	"player/conf"
-	"player/ui/cuidecor"
 	"time"
 
 	"github.com/jroimartin/gocui"
@@ -31,8 +30,8 @@ func (l *Layout) Manage(*gocui.Gui) (err error) {
 	return
 }
 
-func (l *Layout) ListVIndex(y int) (err error) {
-	cuidecor.ForceUpdate(l.g)()
+func (l *Layout) CursorIndex(y int) (err error) {
+	Update()
 	return KeyIndex(l.g, l.listV, y)
 }
 
