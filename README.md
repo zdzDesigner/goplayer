@@ -1,5 +1,6 @@
 ## introduction 
 > golang music player
+[snapshot](./player.png)
 
 
 ## run
