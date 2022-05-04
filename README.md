@@ -13,8 +13,8 @@
 ### audio
 > github.com/faiface/beep
 
-## UI
-> dependent gocui
+## ui
+> github.com/jroimartin/gocui
 
 
 ## heighten
