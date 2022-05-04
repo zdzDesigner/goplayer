@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"player/app"
+	"player/audio"
 	"player/conf"
 	"player/event"
 	"player/ui"
@@ -16,8 +16,8 @@ func main() {
 
 	// 选择一首
 	event.Evt.On("choose", func(name string) {
-		app.Force <- struct{}{} // 强制结束
-		go app.Music(conf.FilePath(name))
+		audio.Force <- struct{}{} // 强制结束
+		go audio.Music(conf.FilePath(name))
 
 		ui.Log(fmt.Sprintln(conf.FileName(name), "..."))
 	})
@@ -26,13 +26,13 @@ func main() {
 	event.Evt.On("next", func(name string) {
 		index := conf.NextIndex(name)
 		name = names[index]
-		go app.Music(name)
+		go audio.Music(name)
 
 		ui.Nui.Layout.CursorIndex(index)
 		ui.Log(fmt.Sprintln(conf.FileName(name), "..."))
 	})
 
-	go app.Music(names[0])
+	go audio.Music(names[0])
 
 	// 视图
 	ui.View(names)
