@@ -31,7 +31,7 @@ func (l *Layout) Manage(*gocui.Gui) (err error) {
 }
 
 func (l *Layout) CursorIndex(y int) (err error) {
-	Update()
+	Nui.Update()
 	return KeyIndex(l.g, l.listV, y)
 }
 
@@ -41,10 +41,23 @@ func (l *Layout) logView() (err error) {
 	if err != nil {
 		v.Title = CurView
 	}
-	// Log(conf.FileName(l.names[0]))
+	// Log(conf.PrifixFileName(l.names[0]))
 	return
 }
 
+func (l *Layout) UpdateList(names []string) (err error) {
+	v := l.listV
+	l.names = names
+	v.Clear()
+	for _, name := range l.names {
+		// fmt.Fprintln(v, name, i) //  写入到stdout
+		fmt.Fprintln(v, conf.PrifixFileName(name)) //  写入到stdout
+	}
+	_, err = l.g.SetCurrentView(ListView)
+	return
+}
+
+// 显示列表
 func (l *Layout) listView() (err error) {
 	maxX, maxY := l.g.Size()
 	v, err := l.g.SetView(ListView, 0, 0, maxX-1, maxY-6)
@@ -62,7 +75,7 @@ func (l *Layout) listView() (err error) {
 	v.Clear()
 	for _, name := range l.names {
 		// fmt.Fprintln(v, name, i) //  写入到stdout
-		fmt.Fprintln(v, conf.FileName(name)) //  写入到stdout
+		fmt.Fprintln(v, conf.PrifixFileName(name)) //  写入到stdout
 	}
 	_, err = l.g.SetCurrentView(ListView)
 	return

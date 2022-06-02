@@ -11,11 +11,14 @@ import (
 	"github.com/faiface/beep/speaker"
 )
 
-var Force chan struct{}
+var (
+	Force    chan struct{}
+	PlayName = ""
+)
 
 func Music(name string) {
 	if Play(name) {
-		event.Evt.Emit("next", conf.FileName(name))
+		event.Evt.Emit("NEXT", conf.PrifixFileName(name))
 	}
 }
 
@@ -29,6 +32,7 @@ func Play(name string) bool {
 			panic(err)
 		}
 	}()
+	PlayName = name
 
 	source, err := getSource(name)
 	if err != nil {

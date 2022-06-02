@@ -27,6 +27,15 @@ func List() []string {
 	return names
 }
 
+func UpdateList() []string {
+	var err error
+	names, err = AudioList()
+	if err != nil {
+		panic("get song list fail")
+	}
+	return names
+}
+
 // 音频列表
 func AudioList() (names []string, err error) {
 	exts := []string{"mp3", "wav", "wma", "ape"}
@@ -67,7 +76,7 @@ func deepDir(dir string, fn func(string, string)) (err error) {
 }
 
 // 获取忽略歌名
-func GetIgnoreDetail() (*os.File, []string, error) {
+func GetIgnoreDetail() (string, []string, error) {
 	var (
 		err  error
 		list []string
@@ -84,19 +93,22 @@ func GetIgnoreDetail() (*os.File, []string, error) {
 	f, err := os.OpenFile(faddr, os.O_RDWR, 0)
 	if err != nil {
 		f, err = os.Create(faddr)
-		f.WriteString("[]")
+		if err == nil {
+			f.WriteString("[]")
+		}
 	}
+	defer f.Close()
 	if err != nil {
-		return nil, nil, err
+		return "", nil, err
 	}
 
 	txt, err := ioutil.ReadFile(faddr)
 	// fmt.Println(txt)
 	if err = json.Unmarshal(txt, &list); err != nil {
-		return nil, nil, err
+		return "", nil, err
 	}
 	// fmt.Println(list)
-	return f, list, nil
+	return faddr, list, nil
 }
 
 // 删除资源
@@ -108,15 +120,17 @@ func DelSong(name string) {
 		}
 	}()
 
-	f, list, err := GetIgnoreDetail()
+	faddr, list, err := GetIgnoreDetail()
 	list = append(list, name)
 	bts, err := json.Marshal(list)
 	if err != nil {
 		return
 	}
 	// fmt.Println("bts::", string(bts))
-	_, err = f.Write(bts)
+
+	f, err := os.OpenFile(faddr, os.O_RDWR, 0)
 	if err != nil {
 		return
 	}
+	_, err = f.Write(bts)
 }

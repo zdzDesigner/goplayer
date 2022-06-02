@@ -6,14 +6,14 @@ import (
 	"github.com/jroimartin/gocui"
 )
 
-type Logger func(string)
+type Logger func(...interface{})
 
 var Log Logger
 
 // Curry Logger
 func RegistLogger(g *gocui.Gui) Logger {
-	return func(val string) {
-		stdout(g, val)
+	return func(val ...interface{}) {
+		stdout(g, fmt.Sprintln(val...))
 	}
 }
 

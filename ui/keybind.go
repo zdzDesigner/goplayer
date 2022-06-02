@@ -59,6 +59,16 @@ func KeyDown(_ *gocui.Gui, v *gocui.View) (err error) {
 	return
 }
 
+func KeyDel(_ *gocui.Gui, v *gocui.View) (err error) {
+	if v == nil {
+		return errors.New("keydown view nil")
+	}
+	_, cy := v.Cursor()
+	cyline, _ := v.Line(cy)
+	event.Evt.Emit("DELETE", cyline)
+	return
+}
+
 func end(_ *gocui.Gui, v *gocui.View) (err error) {
 	if v == nil {
 		return errors.New("keydown view nil")
@@ -76,7 +86,7 @@ func enter(_ *gocui.Gui, v *gocui.View) (err error) {
 	_, cy := v.Cursor()
 	cyline, _ := v.Line(cy)
 	// Log(cyline)
-	event.Evt.Emit("choose", cyline)
+	event.Evt.Emit("CHOOSE", cyline)
 	return
 }
 
@@ -97,6 +107,9 @@ func Keybind(g *gocui.Gui) {
 		return
 	}
 	if err = g.SetKeybinding(ListView, 'j', gocui.ModNone, KeyDown); err != nil {
+		return
+	}
+	if err = g.SetKeybinding(ListView, 'd', gocui.ModNone, KeyDel); err != nil {
 		return
 	}
 	if err = g.SetKeybinding(ListView, gocui.KeyCtrlG, gocui.ModNone, end); err != nil {

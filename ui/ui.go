@@ -23,7 +23,7 @@ func View(names []string) {
 	Nui.keybind()
 	go func() {
 		time.Sleep(time.Microsecond * 10)
-		Nui.Log(conf.FileName(names[0]))
+		Nui.Log(conf.PrifixFileName(names[0]))
 	}()
 
 	// <-channel 主循环
