@@ -18,18 +18,20 @@ var (
 
 func Music(name string) {
 	if Play(name) {
-		event.Evt.Emit("NEXT", conf.PrifixFileName(name))
+		event.Evt.Emit("NEXT", event.NewNext(conf.PrifixFileName(name), 0))
 	}
 }
 
 // Force 外部信号停止内部执行
-func Play(name string) bool {
+func Play(name string) (ok bool) {
 	var err error
 	Force = make(chan struct{}, 1)   // 强制结束
 	finish := make(chan struct{}, 1) // 单曲完成播放
 	defer func() {
 		if err != nil {
-			panic(err)
+			speaker.Close()
+			ok = true
+			// panic(err)
 		}
 	}()
 	PlayName = name

@@ -6,11 +6,29 @@ func init() {
 	Evt = NewPubSub()
 }
 
-type Handler func(string)
+func StringVal(it interface{}) string {
+	return it.(string)
+}
+
+type next struct {
+	name  string
+	index int
+}
+
+func NewNext(name string, index int) *next {
+	return &next{name, index}
+}
+
+func NextVal(it interface{}) (string, int) {
+	n := it.(*next)
+	return n.name, n.index
+}
+
+type Handler func(interface{})
 
 type PubSuber interface {
 	On(string, Handler)
-	Emit(string, ...string)
+	Emit(string, interface{})
 }
 
 type PubSub struct {
@@ -21,13 +39,13 @@ func (ps *PubSub) On(key string, handler Handler) {
 	ps.pool[key] = append(ps.pool[key], handler)
 }
 
-func (ps *PubSub) Emit(key string, strs ...string) {
+func (ps *PubSub) Emit(key string, val interface{}) {
 	handlers := ps.pool[key]
 	if handlers == nil {
 		return
 	}
 	for _, handler := range handlers {
-		handler(strs[0])
+		handler(val)
 	}
 }
 

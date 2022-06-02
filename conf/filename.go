@@ -30,7 +30,7 @@ func FileName(name string) string {
 // 获取当前歌曲索引地址
 func Index(name string) int {
 	for i, n := range names {
-		if name == PrifixFileName(n) {
+		if ClearPrefix(FileName(name)) == FileName(n) {
 			return i
 		}
 	}
