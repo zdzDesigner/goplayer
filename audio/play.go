@@ -4,6 +4,7 @@ import (
 	"os"
 	"player/conf"
 	"player/event"
+	"player/ui"
 	"time"
 
 	"github.com/faiface/beep"
@@ -24,7 +25,9 @@ func Music(name string) {
 }
 
 func Paused() {
+	speaker.Lock()
 	ctrl.Paused = !ctrl.Paused
+	speaker.Unlock()
 }
 
 // Force 外部信号停止内部执行
@@ -36,7 +39,6 @@ func Play(name string) (ok bool) {
 		if err != nil {
 			speaker.Close()
 			ok = true
-			// panic(err)
 		}
 	}()
 	PlayName = name
@@ -60,16 +62,39 @@ func Play(name string) (ok bool) {
 	}
 	defer stm.Close()
 
+	// go func() {
+	// time.Sleep(time.Second * 2)
+	// err = stm.Seek(stm.Len() - 20000)
+	// if err != nil {
+	// 	ui.Log("len", stm.Len(), "position:", stm.Position(), err.Error())
+	// }
+	// }()
+
 	// 采样率
 	if err = speaker.Init(bfmt.SampleRate, bfmt.SampleRate.N(time.Second/10)); err != nil {
 		return false
 	}
 
 	ctrl = &beep.Ctrl{Streamer: stm}
-	speaker.Play(ctrl)
-	beep.Seq(beep.Callback(func() {
-		finish <- struct{}{}
+
+	speaker.Play(ctrl, beep.StreamerFunc(func(_ [][2]float64) (n int, ok bool) {
+		ui.Nui.Update()
+		ui.Log("len", stm.Len(), "position:", stm.Position())
+		// err = stm.Seek(stm.Len() - 80000)
+		// if err != nil {
+		// 	ui.Log("len", stm.Len(), "position:", stm.Position(), err.Error())
+		// }
+		if stm.Position()+2000 >= stm.Len() {
+			finish <- struct{}{}
+			return 0, false
+		}
+		return 0, true
 	}))
+
+	// beep.Callback(func() {
+	// finish <- struct{}{}
+	// })
+
 	// 播放完成
 	// speaker.Play(beep.Seq(stm, beep.Callback(func() {
 	// 	finish <- struct{}{}
