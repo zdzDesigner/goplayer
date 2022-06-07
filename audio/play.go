@@ -12,6 +12,7 @@ import (
 )
 
 var (
+	ctrl     *beep.Ctrl
 	Force    chan struct{}
 	PlayName = ""
 )
@@ -20,6 +21,10 @@ func Music(name string) {
 	if Play(name) {
 		event.Evt.Emit("NEXT", event.NewNext(conf.PrifixFileName(name), 0))
 	}
+}
+
+func Paused() {
+	ctrl.Paused = !ctrl.Paused
 }
 
 // Force 外部信号停止内部执行
@@ -60,10 +65,15 @@ func Play(name string) (ok bool) {
 		return false
 	}
 
-	// 播放完成
-	speaker.Play(beep.Seq(stm, beep.Callback(func() {
+	ctrl = &beep.Ctrl{Streamer: stm}
+	speaker.Play(ctrl)
+	beep.Seq(beep.Callback(func() {
 		finish <- struct{}{}
-	})))
+	}))
+	// 播放完成
+	// speaker.Play(beep.Seq(stm, beep.Callback(func() {
+	// 	finish <- struct{}{}
+	// })))
 
 	select {
 	case <-finish:

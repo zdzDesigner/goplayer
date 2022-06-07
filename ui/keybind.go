@@ -69,6 +69,16 @@ func KeyDel(_ *gocui.Gui, v *gocui.View) (err error) {
 	return
 }
 
+func KeyAuidoCtrl(_ *gocui.Gui, v *gocui.View) (err error) {
+	if v == nil {
+		return errors.New("keydown view nil")
+	}
+	// _, cy := v.Cursor()
+	// cyline, _ := v.Line(cy)
+	event.Evt.Emit("AUDIO_CTRL", nil)
+	return
+}
+
 func end(_ *gocui.Gui, v *gocui.View) (err error) {
 	if v == nil {
 		return errors.New("keydown view nil")
@@ -110,6 +120,9 @@ func Keybind(g *gocui.Gui) {
 		return
 	}
 	if err = g.SetKeybinding(ListView, 'd', gocui.ModNone, KeyDel); err != nil {
+		return
+	}
+	if err = g.SetKeybinding(ListView, 's', gocui.ModNone, KeyAuidoCtrl); err != nil {
 		return
 	}
 	if err = g.SetKeybinding(ListView, gocui.KeyCtrlG, gocui.ModNone, end); err != nil {

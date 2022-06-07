@@ -15,8 +15,8 @@ func main() {
 	// fmt.Println(names)
 
 	// 选择一首
-	event.Evt.On("CHOOSE", func(it interface{}) {
-		name := event.StringVal(it)
+	event.Evt.On("CHOOSE", func(t interface{}) {
+		name := event.StringVal(t)
 		audio.Force <- struct{}{} // 强制结束
 		go audio.Music(conf.FilePath(name))
 
@@ -24,8 +24,8 @@ func main() {
 	})
 
 	// 下一首
-	event.Evt.On("NEXT", func(it interface{}) {
-		name, index := event.NextVal(it)
+	event.Evt.On("NEXT", func(t interface{}) {
+		name, index := event.NextVal(t)
 		if index == 0 {
 			index = conf.NextIndex(name)
 			name = names[index]
@@ -37,8 +37,8 @@ func main() {
 		// ui.Log("defer NEXT", name, index)
 	})
 
-	event.Evt.On("DELETE", func(it interface{}) {
-		name := conf.ClearPrefix(event.StringVal(it))
+	event.Evt.On("DELETE", func(t interface{}) {
+		name := conf.ClearPrefix(event.StringVal(t))
 		// ui.Log(fmt.Sprintln("DELETE", name, "PlayName", conf.FileName(audio.PlayName)))
 		if name == conf.FileName(audio.PlayName) { // 正在播放
 			audio.Force <- struct{}{}               // 强制结束
@@ -52,6 +52,9 @@ func main() {
 		ui.Nui.Layout.UpdateList(names)
 	})
 
+	event.Evt.On("AUDIO_CTRL", func(_ interface{}) {
+		audio.Paused()
+	})
 	go audio.Music(names[0])
 
 	// 视图
