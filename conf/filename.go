@@ -8,7 +8,7 @@ var prefix = "-"
 
 // - xxx -> fff/ggg/xxx.mp3
 func FilePath(name string) string {
-	return names[Index(name)]
+	return AUDIO_NAMES[Index(name)]
 }
 
 // - xxxx -> xxxx
@@ -29,7 +29,7 @@ func FileName(name string) string {
 
 // 获取当前歌曲索引地址
 func Index(name string) int {
-	for i, n := range names {
+	for i, n := range AUDIO_NAMES {
 		if ClearPrefix(FileName(name)) == FileName(n) {
 			return i
 		}
@@ -40,7 +40,7 @@ func Index(name string) int {
 // 下一个
 func NextIndex(name string) int {
 	index := Index(name) + 1
-	if index == len(names) {
+	if index == len(AUDIO_NAMES) {
 		index = 0
 	}
 	return index

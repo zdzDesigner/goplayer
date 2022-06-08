@@ -9,52 +9,81 @@ import (
 	"os"
 	"path"
 	"player/util"
+	"regexp"
 	"strings"
 )
 
-var names []string // 歌曲播放地址
+var AUDIO_NAMES []string // 歌曲播放地址
 
 // 获取歌曲列表
 func List() []string {
 	var err error
-	if len(names) > 0 {
-		return names
+	if len(AUDIO_NAMES) > 0 {
+		return AUDIO_NAMES
 	}
-	names, err = AudioList()
+	AUDIO_NAMES, err = AudioList()
 	if err != nil {
 		panic("get song list fail")
 	}
-	return names
+	return AUDIO_NAMES
 }
 
 func UpdateList() []string {
 	var err error
-	names, err = AudioList()
+	AUDIO_NAMES, err = AudioList()
 	if err != nil {
 		panic("get song list fail")
 	}
-	return names
+	return AUDIO_NAMES
 }
 
 // 音频列表
 func AudioList() (names []string, err error) {
-	exts := []string{"mp3", "wav", "wma", "ape"}
 	_, list, err := GetIgnoreDetail()
-
-	deepDir(DIR_ASSETS, func(name, dir string) {
-		if !util.Contains(exts, strings.TrimLeft(path.Ext(name), ".")) {
-			return
-		}
-		if !util.Contains(list, name) {
-			names = append(names, fmt.Sprintf("%s/%s", dir, name))
-		}
-	})
+	if err != nil {
+		return
+	}
+	if len(AUDIO_NAMES) > 0 {
+		names = cacheAudioList(list)
+	} else {
+		names = runtimeAudioList(list)
+	}
 
 	if len(names) == 0 {
 		err = errors.New("no music file in current dir")
 	}
-
 	return
+}
+
+func cacheAudioList(list []string) (names []string) {
+	for _, filepath := range AUDIO_NAMES {
+		name := regexp.MustCompile(`^.*/`).ReplaceAllString(filepath, "")
+		if !util.Contains(list, name) {
+			names = append(names, filepath)
+		}
+	}
+	return
+}
+
+func runtimeAudioList(list []string) (names []string) {
+	var queueNames []string
+	deepDir(DIR_ASSETS, func(name, dir string) {
+		if !validExt(name) {
+			return
+		}
+		if !util.Contains(list, name) {
+			queueNames = append(queueNames, fmt.Sprintf("%s/%s", dir, name))
+		}
+	})
+	for _, index := range util.RandomMutil(len(queueNames), 0, len(queueNames)-1) {
+		names = append(names, queueNames[index])
+	}
+	return
+}
+
+func validExt(name string) bool {
+	exts := []string{"mp3", "wav", "wma", "ape"}
+	return util.Contains(exts, strings.TrimLeft(path.Ext(name), "."))
 }
 
 // 深度递归文件夹

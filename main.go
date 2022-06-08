@@ -26,7 +26,7 @@ func main() {
 	// 下一首
 	event.Evt.On("NEXT", func(t interface{}) {
 		name, index := event.NextVal(t)
-		if index == 0 {
+		if index == -1 {
 			index = conf.NextIndex(name)
 			name = names[index]
 		}

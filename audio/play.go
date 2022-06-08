@@ -20,7 +20,7 @@ var (
 
 func Music(name string) {
 	if Play(name) {
-		event.Evt.Emit("NEXT", event.NewNext(conf.PrifixFileName(name), 0))
+		event.Evt.Emit("NEXT", event.NewNext(conf.PrifixFileName(name), -1))
 	}
 }
 
