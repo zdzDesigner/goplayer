@@ -50,7 +50,6 @@ func (ui *UI) layout(names []string) {
 
 func (ui *UI) ForceUpdate() {
 	ui.Update = ForceUpdate(ui.g)
-	Update = ui.Update
 }
 
 func (ui *UI) keybind() {
@@ -59,5 +58,4 @@ func (ui *UI) keybind() {
 
 func (ui *UI) RegistLog() {
 	ui.Log = RegistLogger(ui.g)
-	Log = ui.Log
 }

@@ -78,8 +78,12 @@ func Play(name string) (ok bool) {
 	ctrl = &beep.Ctrl{Streamer: stm}
 
 	speaker.Play(ctrl, beep.StreamerFunc(func(_ [][2]float64) (n int, ok bool) {
-		ui.Nui.Update()
-		ui.Log("len", stm.Len(), "position:", stm.Position())
+		if stm.Position()%100 == 0 {
+			seek := stm.Position()
+			total := stm.Len()
+			ui.Nui.Update()
+			ui.Log.Update(seek*100/total, "%")
+		}
 		// err = stm.Seek(stm.Len() - 80000)
 		// if err != nil {
 		// 	ui.Log("len", stm.Len(), "position:", stm.Position(), err.Error())

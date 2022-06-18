@@ -13,7 +13,7 @@ package conf
 
 // var DIR_ASSETS = "/home/zdz/temp/lj-resource"
 
-// var DIR_ASSETS = "/home/zdz/temp/lj-resource/李健-2003 似水流年"
+var DIR_ASSETS = "/home/zdz/temp/lj-resource/李健-2003 似水流年"
 
 // var DIR_ASSETS = "/home/zdz/temp/ape-resource2"
 // var DIR_ASSETS = "/home/zdz/temp/ape-resource"
@@ -24,4 +24,4 @@ package conf
 
 // var DIR_ASSETS = "/home/zdz/temp/music/like"
 
-var DIR_ASSETS = "/home/zdz/temp/like-resource"
+// var DIR_ASSETS = "/home/zdz/temp/like-resource"

@@ -8,7 +8,8 @@ var Update Updater
 
 // 强制更新
 func ForceUpdate(g *gocui.Gui) Updater {
-	return func() {
+	Update = func() {
 		g.Update(func(g *gocui.Gui) error { return nil })
 	}
+	return Update
 }
