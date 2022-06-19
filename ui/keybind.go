@@ -9,6 +9,8 @@ import (
 	"player/lib/gocui"
 )
 
+var index = 0
+
 func quit(g *gocui.Gui, v *gocui.View) error {
 	return gocui.ErrQuit
 }
@@ -23,7 +25,9 @@ func setCursor(v *gocui.View, val int, validator func(int, int) bool) (oy, cy in
 		return 0, 0, errors.New("cursor limit")
 	}
 	if err = v.SetCursor(cx, cy); err != nil { // 移动,  内层数据越界了(err)
+		Log(ox, oy)
 		v.SetOrigin(ox, oy+val)
+		// v.FocusPoint(ox, oy+val)
 		err = nil
 	}
 
@@ -39,10 +43,12 @@ func keyUp(_ *gocui.Gui, v *gocui.View) (err error) {
 	setCursor(v, -1, func(oy, cy int) bool {
 		return oy+cy > -1
 	})
+
 	return
 }
 
 func KeyIndex(_ *gocui.Gui, v *gocui.View, y int) (err error) {
+	// v.FocusPoint(0, y)
 	return v.SetCursor(0, y)
 }
 

@@ -25,11 +25,9 @@ const (
 	RIGHT  = 8 // view is overlapping at right edge
 )
 
-var (
-	// ErrInvalidPoint is returned when client passed invalid coordinates of a cell.
-	// Most likely client has passed negative coordinates of a cell.
-	ErrInvalidPoint = errors.New("invalid point")
-)
+// ErrInvalidPoint is returned when client passed invalid coordinates of a cell.
+// Most likely client has passed negative coordinates of a cell.
+var ErrInvalidPoint = errors.New("invalid point")
 
 // A View is a window. It maintains its own internal buffer and cursor
 // position.
@@ -450,7 +448,7 @@ func (v *View) setRune(x, y int, ch rune, fgColor, bgColor Attribute) error {
 func (v *View) SetCursor(x, y int) error {
 	maxX, maxY := v.Size()
 	if x < 0 || x >= maxX || y < 0 || y >= maxY {
-		return nil
+		return errors.New("limit")
 	}
 	v.cx = x
 	v.cy = y

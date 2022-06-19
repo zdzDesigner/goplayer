@@ -43,7 +43,8 @@ func RegistLogger(g *gocui.Gui) Logger {
 		// str := fmt.Sprintf(pad.Left("", len(val), "%s"), val...)
 		curlen := len(hantoen(str))
 		length := maxX - 2 - curlen
-		str = strings.ReplaceAll(str, space, pad.Left("", len(space)+length, "-"))
+		// str = strings.ReplaceAll(str, space, pad.Left("", len(space)+length, "-"))
+		str = strings.ReplaceAll(str, space, pad.Left("", len(space)+length, " "))
 		stdout(g, str)
 	}
 	return Log

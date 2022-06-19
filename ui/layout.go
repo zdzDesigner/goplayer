@@ -69,6 +69,8 @@ func (l *Layout) listView() (err error) {
 	// 滚动到底部
 	v.Highlight = true
 	v.FgColor = gocui.ColorBlue
+	// v.FgColor = gocui.ColorRed
+
 	v.SelFgColor = gocui.AttrBold + gocui.ColorYellow
 
 	v.Clear()
