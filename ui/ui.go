@@ -3,18 +3,14 @@ package ui
 import (
 	"log"
 	"player/conf"
+	"player/lib/gocui"
 	"time"
-
-	"github.com/jroimartin/gocui"
 )
 
 var Nui *UI
 
 func View(names []string) {
-	g, err := gocui.NewGui(gocui.OutputNormal)
-	if err != nil {
-		log.Panicln(err)
-	}
+	g, _ := gocui.NewGui(gocui.OutputTrue, false, gocui.NORMAL, false, map[rune]string{})
 	defer g.Close()
 	Nui = NewUI(g)
 	Nui.RegistLog()

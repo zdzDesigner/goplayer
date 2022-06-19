@@ -2,13 +2,14 @@ package ui
 
 import (
 	"fmt"
+	"player/lib/gocui"
+	"regexp"
 	"strings"
 
-	"github.com/jroimartin/gocui"
 	"github.com/willf/pad"
 )
 
-var space = pad.Left("", 10, "-")
+var space = pad.Left("", 1, "@")
 
 type update_data struct {
 	Data []interface{}
@@ -17,7 +18,8 @@ type update_data struct {
 type Logger func(...interface{})
 
 func (f Logger) Update(val ...interface{}) {
-	data := update_data{Data: append(store, append([]interface{}{space}, val[:]...)...)}
+	// data := update_data{Data: append(store, append([]interface{}{space}, val[:]...)...)}
+	data := update_data{Data: append(store, val[:]...)}
 	f(data)
 }
 
@@ -30,15 +32,18 @@ var (
 func RegistLogger(g *gocui.Gui) Logger {
 	Log = func(val ...interface{}) {
 		if updateDate, ok := val[0].(update_data); !ok { // 是否为更新数据
-			store = val
+			store = append(val, space)
+			// store = val
 		} else {
 			val = updateDate.Data
 		}
 		maxX, _ := g.Size()
-		// str := fmt.Sprintln(append(val, []interface{}{maxX, maxY})...)
+
 		str := fmt.Sprintln(val...)
-		length := maxX - len(str)
-		str = strings.ReplaceAll(str, space, pad.Right("", len(space)+length+2, " "))
+		// str := fmt.Sprintf(pad.Left("", len(val), "%s"), val...)
+		curlen := len(hantoen(str))
+		length := maxX - 2 - curlen
+		str = strings.ReplaceAll(str, space, pad.Left("", len(space)+length, "-"))
 		stdout(g, str)
 	}
 	return Log
@@ -50,8 +55,14 @@ func stdout(g *gocui.Gui, log string) (err error) {
 	if err != nil {
 		return
 	}
-	v.Clear()            // 清除输出
+	v.Clear() // 清除输出
+	// fmt.Fprintln(v, fmt.Sprint("aa 绷带俱乐部拉乌33")) //  写入到stdout
 	fmt.Fprintln(v, log) // 写入到stdout
 
 	return
+}
+
+func hantoen(str string) string {
+	// return regexp.MustCompile("[\u4e00-\u9fa5]").ReplaceAllString(str, "11")
+	return regexp.MustCompile("[\u4e00-\u9fa5]").ReplaceAllLiteralString(str, "11")
 }

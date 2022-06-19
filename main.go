@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"player/audio"
 	"player/conf"
 	"player/event"
@@ -20,7 +19,8 @@ func main() {
 		audio.Force <- struct{}{} // 强制结束
 		go audio.Music(conf.FilePath(name))
 
-		ui.Log(fmt.Sprintln(conf.PrifixFileName(name), "..."))
+		ui.Log(name)
+		// ui.Log("0", "...")
 	})
 
 	// 下一首
@@ -33,7 +33,8 @@ func main() {
 		go audio.Music(name)
 
 		ui.Nui.Layout.CursorIndex(index)
-		ui.Log(fmt.Sprintln(conf.PrifixFileName(name), "..."))
+		ui.Log(conf.PrifixFileName(name))
+		// ui.Log(name, "...")
 		// ui.Log("defer NEXT", name, index)
 	})
 

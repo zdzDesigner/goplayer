@@ -6,8 +6,7 @@ import (
 	"log"
 	"player/conf"
 	"player/event"
-
-	"github.com/jroimartin/gocui"
+	"player/lib/gocui"
 )
 
 func quit(g *gocui.Gui, v *gocui.View) error {
@@ -109,30 +108,30 @@ func Keybind(g *gocui.Gui) {
 		}
 	}()
 
-	if err = g.SetKeybinding("", 'q', gocui.ModNone, quit); err != nil {
+	if err = g.SetKeybinding("", nil, 'q', gocui.ModNone, quit); err != nil {
 		return
 	}
 
-	if err = g.SetKeybinding(ListView, 'k', gocui.ModNone, keyUp); err != nil {
+	if err = g.SetKeybinding(ListView, nil, 'k', gocui.ModNone, keyUp); err != nil {
 		return
 	}
-	if err = g.SetKeybinding(ListView, 'j', gocui.ModNone, KeyDown); err != nil {
+	if err = g.SetKeybinding(ListView, nil, 'j', gocui.ModNone, KeyDown); err != nil {
 		return
 	}
-	if err = g.SetKeybinding(ListView, 'd', gocui.ModNone, KeyDel); err != nil {
+	if err = g.SetKeybinding(ListView, nil, 'd', gocui.ModNone, KeyDel); err != nil {
 		return
 	}
-	if err = g.SetKeybinding(ListView, 's', gocui.ModNone, KeyAuidoCtrl); err != nil {
+	if err = g.SetKeybinding(ListView, nil, 's', gocui.ModNone, KeyAuidoCtrl); err != nil {
 		return
 	}
-	if err = g.SetKeybinding(ListView, gocui.KeyCtrlG, gocui.ModNone, end); err != nil {
+	if err = g.SetKeybinding(ListView, nil, gocui.KeyCtrlG, gocui.ModNone, end); err != nil {
 		return
 	}
 
-	if err = g.SetKeybinding(ListView, gocui.KeyEnter, gocui.ModNone, enter); err != nil {
+	if err = g.SetKeybinding(ListView, nil, gocui.KeyEnter, gocui.ModNone, enter); err != nil {
 		return
 	}
-	if err = g.SetKeybinding(ListView, gocui.KeySpace, gocui.ModNone, enter); err != nil {
+	if err = g.SetKeybinding(ListView, nil, gocui.KeySpace, gocui.ModNone, enter); err != nil {
 		return
 	}
 }

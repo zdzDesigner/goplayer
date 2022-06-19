@@ -1,6 +1,6 @@
 package ui
 
-import "github.com/jroimartin/gocui"
+import "player/lib/gocui"
 
 type Updater func()
 

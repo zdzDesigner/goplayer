@@ -1,6 +1,7 @@
 package audio
 
 import (
+	"fmt"
 	"os"
 	"player/conf"
 	"player/event"
@@ -82,7 +83,7 @@ func Play(name string) (ok bool) {
 			seek := stm.Position()
 			total := stm.Len()
 			ui.Nui.Update()
-			ui.Log.Update(seek*100/total, "%")
+			ui.Log.Update(fmt.Sprintf("%d%s", seek*100/total, "%"))
 		}
 		// err = stm.Seek(stm.Len() - 80000)
 		// if err != nil {

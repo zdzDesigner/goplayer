@@ -72,6 +72,8 @@ func runtimeAudioList(list []string) (names []string) {
 			return
 		}
 		if !util.Contains(list, name) {
+			// name = regexp.MustCompile(`（`).ReplaceAllString(name, "(")
+			// name = regexp.MustCompile(`）`).ReplaceAllString(name, ")")
 			queueNames = append(queueNames, fmt.Sprintf("%s/%s", dir, name))
 		}
 	})

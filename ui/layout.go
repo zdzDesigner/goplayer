@@ -3,9 +3,8 @@ package ui
 import (
 	"fmt"
 	"player/conf"
+	"player/lib/gocui"
 	"time"
-
-	"github.com/jroimartin/gocui"
 )
 
 var (
@@ -37,7 +36,7 @@ func (l *Layout) CursorIndex(y int) (err error) {
 
 func (l *Layout) logView() (err error) {
 	maxX, maxY := l.g.Size()
-	v, err := l.g.SetView(CurView, 0, maxY-5, maxX-1, maxY-1)
+	v, err := l.g.SetView(CurView, 0, maxY-5, maxX-1, maxY-1, 0)
 	if err != nil {
 		v.Title = CurView
 	}
@@ -60,7 +59,7 @@ func (l *Layout) UpdateList(names []string) (err error) {
 // 显示列表
 func (l *Layout) listView() (err error) {
 	maxX, maxY := l.g.Size()
-	v, err := l.g.SetView(ListView, 0, 0, maxX-1, maxY-6)
+	v, err := l.g.SetView(ListView, 0, 0, maxX-1, maxY-6, 0)
 	if err != nil {
 		return
 	}
@@ -74,8 +73,11 @@ func (l *Layout) listView() (err error) {
 
 	v.Clear()
 	for _, name := range l.names {
+		name = conf.PrifixFileName(name)
 		// fmt.Fprintln(v, name, i) //  写入到stdout
-		fmt.Fprintln(v, conf.PrifixFileName(name)) //  写入到stdout
+		// fmt.Fprintln(v, conf.PrifixFileName(name)) //  写入到stdout
+		fmt.Fprintln(v, name) //  写入到stdout
+
 	}
 	_, err = l.g.SetCurrentView(ListView)
 	return
