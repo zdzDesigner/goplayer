@@ -4,6 +4,7 @@ go 1.15
 
 require (
 	github.com/faiface/beep v1.1.0
+	github.com/fsnotify/fsnotify v1.5.4
 	github.com/gdamore/tcell/v2 v2.4.0
 	github.com/gin-gonic/gin v1.7.2
 	github.com/go-errors/errors v1.0.2

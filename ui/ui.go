@@ -2,9 +2,7 @@ package ui
 
 import (
 	"log"
-	"player/conf"
 	"player/lib/gocui"
-	"time"
 )
 
 var Nui *UI
@@ -14,13 +12,13 @@ func View(names []string) {
 	defer g.Close()
 	Nui = NewUI(g)
 	Nui.RegistLog()
-	Nui.ForceUpdate()
+	Nui.RegistUpdate()
 	Nui.layout(names)
 	Nui.keybind()
-	go func() {
-		time.Sleep(time.Microsecond * 10)
-		Nui.Log(conf.PrifixFileName(names[0]))
-	}()
+	// go func() {
+	// time.Sleep(time.Microsecond * 100)
+	// Nui.Log(conf.PrifixFileName(names[0]))
+	// }()
 
 	// <-channel 主循环
 	if err := g.MainLoop(); err != nil && err != gocui.ErrQuit {
@@ -44,12 +42,12 @@ func (ui *UI) layout(names []string) {
 	ui.g.SetManagerFunc(ui.Layout.Manage)
 }
 
-func (ui *UI) ForceUpdate() {
-	ui.Update = ForceUpdate(ui.g)
-}
-
 func (ui *UI) keybind() {
 	Keybind(ui.g)
+}
+
+func (ui *UI) RegistUpdate() {
+	ui.Update = ForceUpdate(ui.g)
 }
 
 func (ui *UI) RegistLog() {

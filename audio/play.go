@@ -1,11 +1,11 @@
 package audio
 
 import (
-	"fmt"
 	"os"
 	"player/conf"
-	"player/event"
+	"player/ctrl/event"
 	"player/ui"
+	"sync"
 	"time"
 
 	"github.com/faiface/beep"
@@ -15,26 +15,20 @@ import (
 
 var (
 	ctrl     *beep.Ctrl
-	Force    chan struct{}
+	m        sync.Mutex
+	Force    = make(chan struct{}, 1) // 强制结束,Force 外部信号停止内部执行
 	PlayName = ""
 )
 
 func Music(name string) {
 	if Play(name) {
-		event.Evt.Emit("NEXT", event.NewNext(conf.PrifixFileName(name), -1))
+		event.Evt.Emit("NEXT", event.NewNext(conf.PrifixFileName(PlayName), -1))
 	}
 }
 
-func Paused() {
-	speaker.Lock()
-	ctrl.Paused = !ctrl.Paused
-	speaker.Unlock()
-}
-
-// Force 外部信号停止内部执行
+// 播放
 func Play(name string) (ok bool) {
 	var err error
-	Force = make(chan struct{}, 1)   // 强制结束
 	finish := make(chan struct{}, 1) // 单曲完成播放
 	defer func() {
 		if err != nil {
@@ -42,7 +36,9 @@ func Play(name string) (ok bool) {
 			ok = true
 		}
 	}()
+	Lock()
 	PlayName = name
+	Unlock()
 
 	source, err := getSource(name)
 	if err != nil {
@@ -83,7 +79,8 @@ func Play(name string) (ok bool) {
 			seek := stm.Position()
 			total := stm.Len()
 			ui.Nui.Update()
-			ui.Log.Update(fmt.Sprintf("%d%s", seek*100/total, "%"))
+			// ui.Log.Update(fmt.Sprintf("%d%s", seek*100/total, "%"))
+			ui.Log.Progress(seek * 100 / total)
 		}
 		// err = stm.Seek(stm.Len() - 80000)
 		// if err != nil {
@@ -111,4 +108,26 @@ func Play(name string) (ok bool) {
 	case <-Force:
 		return false
 	}
+}
+
+// 停止
+func Stop() {
+	if cap(Force) > len(Force) {
+		Force <- struct{}{} // 强制结束
+	}
+}
+
+// 暂停
+func Paused() {
+	speaker.Lock()
+	ctrl.Paused = !ctrl.Paused
+	speaker.Unlock()
+}
+
+func Lock() {
+	m.Lock()
+}
+
+func Unlock() {
+	m.Unlock()
 }

@@ -1,9 +1,10 @@
 package main
 
 import (
+	"fmt"
 	"player/audio"
 	"player/conf"
-	"player/event"
+	"player/ctrl/event"
 	"player/ui"
 )
 
@@ -16,7 +17,8 @@ func main() {
 	// 选择一首
 	event.Evt.On("CHOOSE", func(t interface{}) {
 		name := event.StringVal(t)
-		audio.Force <- struct{}{} // 强制结束
+		fmt.Println(name)
+		audio.Stop()
 		go audio.Music(conf.FilePath(name))
 
 		ui.Log(name)
@@ -32,8 +34,9 @@ func main() {
 		}
 		go audio.Music(name)
 
+		// return
 		ui.Nui.Layout.CursorIndex(index)
-		ui.Log(conf.PrifixFileName(name))
+		// ui.Log(conf.PrifixFileName(name))
 		// ui.Log(name, "...")
 		// ui.Log("defer NEXT", name, index)
 	})
@@ -42,7 +45,7 @@ func main() {
 		name := conf.ClearPrefix(event.StringVal(t))
 		// ui.Log(fmt.Sprintln("DELETE", name, "PlayName", conf.FileName(audio.PlayName)))
 		if name == conf.FileName(audio.PlayName) { // 正在播放
-			audio.Force <- struct{}{}               // 强制结束
+			audio.Stop()
 			nextname := names[conf.NextIndex(name)] // 先查到下一个播放的歌曲名
 			defer func() {                          // 等待更新后再根据目标歌曲名查到index
 				event.Evt.Emit("NEXT", event.NewNext(nextname, conf.Index(nextname)))
@@ -53,10 +56,23 @@ func main() {
 		ui.Nui.Layout.UpdateList(names)
 	})
 
-	event.Evt.On("AUDIO_CTRL", func(_ interface{}) {
-		audio.Paused()
+	event.Evt.On("AUDIO_CTRL", func(state interface{}) {
+		val, ok := state.(string)
+		if !ok {
+			return
+		}
+		// ui.Log("CTRL::", val)
+		switch val {
+		case "PAUSE":
+			audio.Paused()
+		case "NEXT":
+			// ui.Log("CTRL:: NEXT", audio.PlayName)
+			// fmt.Println("CTRL:: NEXT", audio.PlayName)
+			event.Evt.Emit("NEXT", event.NewNext(conf.PrifixFileName(audio.PlayName), -1))
+		}
 	})
 	go audio.Music(names[0])
+	// go ctrl.ListenGlobal()
 
 	// 视图
 	ui.View(names)

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 	"player/conf"
-	"player/event"
+	"player/ctrl/event"
 	"player/lib/gocui"
 )
 
@@ -25,9 +25,8 @@ func setCursor(v *gocui.View, val int, validator func(int, int) bool) (oy, cy in
 		return 0, 0, errors.New("cursor limit")
 	}
 	if err = v.SetCursor(cx, cy); err != nil { // 移动,  内层数据越界了(err)
-		Log(ox, oy)
+		// Log(ox, oy)
 		v.SetOrigin(ox, oy+val)
-		// v.FocusPoint(ox, oy+val)
 		err = nil
 	}
 
@@ -48,7 +47,6 @@ func keyUp(_ *gocui.Gui, v *gocui.View) (err error) {
 }
 
 func KeyIndex(_ *gocui.Gui, v *gocui.View, y int) (err error) {
-	// v.FocusPoint(0, y)
 	return v.SetCursor(0, y)
 }
 
@@ -74,13 +72,11 @@ func KeyDel(_ *gocui.Gui, v *gocui.View) (err error) {
 	return
 }
 
-func KeyAuidoCtrl(_ *gocui.Gui, v *gocui.View) (err error) {
+func KeyAuidoCtrlPause(_ *gocui.Gui, v *gocui.View) (err error) {
 	if v == nil {
 		return errors.New("keydown view nil")
 	}
-	// _, cy := v.Cursor()
-	// cyline, _ := v.Line(cy)
-	event.Evt.Emit("AUDIO_CTRL", nil)
+	event.Evt.Emit("AUDIO_CTRL", "PAUSE")
 	return
 }
 
@@ -127,7 +123,7 @@ func Keybind(g *gocui.Gui) {
 	if err = g.SetKeybinding(ListView, nil, 'd', gocui.ModNone, KeyDel); err != nil {
 		return
 	}
-	if err = g.SetKeybinding(ListView, nil, 's', gocui.ModNone, KeyAuidoCtrl); err != nil {
+	if err = g.SetKeybinding(ListView, nil, 's', gocui.ModNone, KeyAuidoCtrlPause); err != nil {
 		return
 	}
 	if err = g.SetKeybinding(ListView, nil, gocui.KeyCtrlG, gocui.ModNone, end); err != nil {

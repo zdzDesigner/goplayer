@@ -11,14 +11,22 @@ import (
 
 var space = pad.Left("", 1, "@")
 
+type Progresser interface {
+	Val() int
+}
+
 type update_data struct {
 	Data []interface{}
 }
 
 type Logger func(...interface{})
 
+func (f Logger) Progress(val int) {
+	// data := update_data{Data: append(store, val[:]...)}
+	// f(data)
+}
+
 func (f Logger) Update(val ...interface{}) {
-	// data := update_data{Data: append(store, append([]interface{}{space}, val[:]...)...)}
 	data := update_data{Data: append(store, val[:]...)}
 	f(data)
 }
@@ -64,6 +72,5 @@ func stdout(g *gocui.Gui, log string) (err error) {
 }
 
 func hantoen(str string) string {
-	// return regexp.MustCompile("[\u4e00-\u9fa5]").ReplaceAllString(str, "11")
 	return regexp.MustCompile("[\u4e00-\u9fa5]").ReplaceAllLiteralString(str, "11")
 }

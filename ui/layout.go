@@ -8,9 +8,11 @@ import (
 )
 
 var (
-	count    = 0
-	CurView  = "Current"
-	ListView = "Song List"
+	count   = 0
+	CurView = "Current"
+	// ListView = "▒Song List▒"
+	// ListView = "▒▒▒▒▒▒▒▒"
+	ListView = "─"
 )
 
 func NewLayout(g *gocui.Gui, names []string) *Layout {
@@ -64,14 +66,15 @@ func (l *Layout) listView() (err error) {
 		return
 	}
 	v.Title = ListView
+	v.TitleColor = gocui.ColorWhite
 	l.listV = v // 添加listV视图
 
-	// 滚动到底部
 	v.Highlight = true
 	v.FgColor = gocui.ColorBlue
-	// v.FgColor = gocui.ColorRed
 
-	v.SelFgColor = gocui.AttrBold + gocui.ColorYellow
+	v.SelFgColor = gocui.AttrBold + gocui.ColorYellow // 选中颜色
+	// v.SelFgColor = gocui.ColorBlack
+	// v.SelBgColor = gocui.ColorWhite
 
 	v.Clear()
 	for _, name := range l.names {

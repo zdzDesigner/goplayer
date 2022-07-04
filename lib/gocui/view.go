@@ -429,8 +429,8 @@ func (v *View) setRune(x, y int, ch rune, fgColor, bgColor Attribute) error {
 		bgColor = v.BgColor
 		ch = v.Mask
 	} else if v.Highlight && ry == rcy {
-		fgColor = fgColor | AttrBold
-		bgColor = bgColor | v.SelBgColor
+		fgColor = v.SelFgColor
+		bgColor = v.SelBgColor
 	}
 
 	// Don't display NUL characters
@@ -448,6 +448,7 @@ func (v *View) setRune(x, y int, ch rune, fgColor, bgColor Attribute) error {
 func (v *View) SetCursor(x, y int) error {
 	maxX, maxY := v.Size()
 	if x < 0 || x >= maxX || y < 0 || y >= maxY {
+		// return nil
 		return errors.New("limit")
 	}
 	v.cx = x
