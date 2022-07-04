@@ -1,5 +1,7 @@
 package event
 
+import "sync"
+
 var Evt PubSuber
 
 func init() {
@@ -32,18 +34,25 @@ type PubSuber interface {
 }
 
 type PubSub struct {
+	sync.Mutex
 	pool map[string][]Handler
 }
 
 func (ps *PubSub) On(key string, handler Handler) {
+	ps.Lock()
+	defer ps.Unlock()
 	ps.pool[key] = append(ps.pool[key], handler)
 }
 
 func (ps *PubSub) Emit(key string, val interface{}) {
+	ps.Lock()
 	handlers := ps.pool[key]
+	ps.Unlock()
 	if handlers == nil {
 		return
 	}
+	// copyHands := make([]Handler, len(handlers))
+	// copy(copyHands, handlers)
 	for _, handler := range handlers {
 		handler(val)
 	}

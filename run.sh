@@ -9,5 +9,5 @@ export __ENV__="${ENV^^}"
 fi
 
 
-# go run .
-go run -race .
+go run .
+# go run -race .

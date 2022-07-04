@@ -1,9 +1,9 @@
 package main
 
 import (
-	"fmt"
 	"player/audio"
 	"player/conf"
+	"player/ctrl"
 	"player/ctrl/event"
 	"player/ui"
 )
@@ -17,11 +17,10 @@ func main() {
 	// 选择一首
 	event.Evt.On("CHOOSE", func(t interface{}) {
 		name := event.StringVal(t)
-		fmt.Println(name)
 		audio.Stop()
 		go audio.Music(conf.FilePath(name))
 
-		ui.Log(name)
+		// ui.Log(name)
 		// ui.Log("0", "...")
 	})
 
@@ -72,7 +71,7 @@ func main() {
 		}
 	})
 	go audio.Music(names[0])
-	// go ctrl.ListenGlobal()
+	go ctrl.ListenGlobal()
 
 	// 视图
 	ui.View(names)
