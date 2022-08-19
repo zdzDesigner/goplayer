@@ -47,9 +47,9 @@ func ListenGlobal() {
 					break
 				}
 				iswatch.m.Unlock()
-				if strings.Contains(string(val), "next") {
+				if CMD, ok := cmdFilter(string(val)); ok {
 					iswatch.m.Lock()
-					event.Evt.Emit("AUDIO_CTRL", "NEXT")
+					event.Evt.Emit("AUDIO_CTRL", CMD)
 					// count = count + 1
 					// fmt.Println(string(val), count)
 					iswatch.is = true
@@ -71,4 +71,17 @@ func ListenGlobal() {
 	watcher.Add(watchFile)
 
 	<-wait
+}
+
+func cmdFilter(str string) (string, bool) {
+	if strings.Contains(str, "next") {
+		return "NEXT", true
+	}
+	if strings.Contains(str, "prev") {
+		return "PREV", true
+	}
+	if strings.Contains(str, "pause") {
+		return "PAUSE", true
+	}
+	return "", false
 }

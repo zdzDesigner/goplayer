@@ -11,6 +11,16 @@
 > bash run.sh env=dev
 
 
+## global keyboard shortcuts
+```sh
+./goplayer.sh -next
+./goplayer.sh -pause
+# 其它待完善....
+```
+
+
+
+
 ## dependent
 ### audio
 > github.com/faiface/beep

@@ -66,7 +66,6 @@ func main() {
 			audio.Paused()
 		case "NEXT":
 			// ui.Log("CTRL:: NEXT", audio.PlayName)
-			// fmt.Println("CTRL:: NEXT", audio.PlayName)
 			event.Evt.Emit("NEXT", event.NewNext(conf.PrifixFileName(audio.PlayName), -1))
 		}
 	})
