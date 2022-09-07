@@ -35,7 +35,7 @@ func main() {
 
 		// return
 		ui.Nui.Layout.CursorIndex(index)
-		// ui.Log(conf.PrifixFileName(name))
+		ui.Log(conf.PrifixFileName(name))
 		// ui.Log(name, "...")
 		// ui.Log("defer NEXT", name, index)
 	})

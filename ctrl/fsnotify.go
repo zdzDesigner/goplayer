@@ -83,5 +83,8 @@ func cmdFilter(str string) (string, bool) {
 	if strings.Contains(str, "pause") {
 		return "PAUSE", true
 	}
+	if strings.Contains(str, "delete") {
+		return "DELETE", true
+	}
 	return "", false
 }

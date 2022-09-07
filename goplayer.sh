@@ -17,3 +17,7 @@ if [[ $1 == "-pause" ]]; then
   echo "pause" > $LISTEN_FILE
   exit
 fi
+if [[ $1 == "-delete" ]]; then
+  echo "-delete" > $LISTEN_FILE
+  exit
+fi
