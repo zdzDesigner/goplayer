@@ -48,6 +48,7 @@ func AudioList() (names []string, err error) {
 	} else {
 		names = runtimeAudioList(list)
 	}
+	// fmt.Println("names:",names)
 
 	if len(names) == 0 {
 		err = errors.New("no music file in current dir")
@@ -68,6 +69,7 @@ func cacheAudioList(list []string) (names []string) {
 func runtimeAudioList(list []string) (names []string) {
 	var queueNames []string
 	deepDir(DIR_ASSETS, func(name, dir string) {
+
 		if !validExt(name) {
 			return
 		}
@@ -80,6 +82,7 @@ func runtimeAudioList(list []string) (names []string) {
 	for _, index := range util.RandomMutil(len(queueNames), 0, len(queueNames)-1) {
 		names = append(names, queueNames[index])
 	}
+	// fmt.Println("names:", names)
 	return
 }
 

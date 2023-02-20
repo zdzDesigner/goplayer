@@ -17,6 +17,13 @@ func Random(args ...int) int {
 // RandomMutil 返回多个随机数
 func RandomMutil(count int, args ...int) []int {
 	min, max := crandom(args...)
+	if max-min == 0 {
+		if count < min {
+			min = count
+		}
+		return []int{min}
+	}
+
 	if max-min < count {
 		count = max - min
 	}

@@ -4,9 +4,7 @@ package conf
 
 // var DIR_ASSETS = "/home/zdz/temp/music/xuwei-resource/默认"
 
-// var DIR_ASSETS = "/home/zdz/temp/music/yingwenjingdian-resource"
-
-// var DIR_ASSETS = "/home/zdz/temp/music/like-resource-one"
+var DIR_ASSETS = "/home/zdz/temp/music/like-resource-one"
 
 // var DIR_ASSETS = "/home/zdz/temp/music/wsgs-resource"
 
@@ -20,7 +18,7 @@ package conf
 
 // var DIR_ASSETS = "/home/zdz/temp/music/qyy-resource"
 
-var DIR_ASSETS = "/home/zdz/temp/music/zhoujielun-resource"
+// var DIR_ASSETS = "/home/zdz/temp/music/zhoujielun-resource"
 
 // var DIR_ASSETS = "/home/zdz/temp/music/like"
 
