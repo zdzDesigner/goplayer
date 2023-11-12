@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"player/util"
@@ -22,18 +21,15 @@ func List() []string {
 		return AUDIO_NAMES
 	}
 	AUDIO_NAMES, err = AudioList()
-	if err != nil {
-		panic("get song list fail")
-	}
+	util.MustNoErr(err)
 	return AUDIO_NAMES
 }
 
 func UpdateList() []string {
 	var err error
 	AUDIO_NAMES, err = AudioList()
-	if err != nil {
-		panic("get song list fail")
-	}
+	util.MustNoErr(err)
+
 	return AUDIO_NAMES
 }
 
@@ -92,29 +88,30 @@ func validExt(name string) bool {
 }
 
 // 深度递归文件夹
-func deepDir(dir string, fn func(string, string)) (err error) {
-	fs, err := ioutil.ReadDir(dir)
+func deepDir(dirpath string, fn func(string, string)) (err error) {
+	// fs, err := ioutil.ReadDir(dir)
+	dirs, err := os.ReadDir(dirpath)
 	if err != nil {
 		return
 	}
 
-	for _, f := range fs {
+	for _, dir := range dirs {
+		f, err := dir.Info()
+		if err != nil {
+			continue
+		}
 		if f.IsDir() {
-			if deepDir(fmt.Sprintf("%s/%s", dir, f.Name()), fn) != nil {
+			if deepDir(fmt.Sprintf("%s/%s", dirpath, f.Name()), fn) != nil {
 				continue
 			}
 		}
-		fn(f.Name(), dir)
+		fn(f.Name(), dirpath)
 	}
 	return
 }
 
 // 获取忽略歌名
-func GetIgnoreDetail() (string, []string, error) {
-	var (
-		err  error
-		list []string
-	)
+func GetIgnoreDetail() (addr string, list []string, err error) {
 	defer func() {
 		if err != nil {
 			fmt.Println(err)
@@ -123,26 +120,21 @@ func GetIgnoreDetail() (string, []string, error) {
 
 	encoded := base64.URLEncoding.EncodeToString([]byte(DIR_ASSETS))
 	// fmt.Println(encoded, util.Dir())
-	faddr := fmt.Sprintf("%s/assets/%s.json", util.Dir(), encoded)
-	f, err := os.OpenFile(faddr, os.O_RDWR, 0)
+	addr = fmt.Sprintf("%s/assets/%s.json", util.Dir(), encoded)
+	f, err := os.OpenFile(addr, os.O_RDWR, 0)
 	if err != nil {
-		f, err = os.Create(faddr)
-		if err == nil {
-			f.WriteString("[]")
-		}
+		f, err = os.Create(addr)
+		util.MustNoErr(err)
+		f.WriteString("[]")
 	}
 	defer f.Close()
-	if err != nil {
-		return "", nil, err
-	}
 
-	txt, err := ioutil.ReadFile(faddr)
-	// fmt.Println(txt)
-	if err = json.Unmarshal(txt, &list); err != nil {
-		return "", nil, err
-	}
+	// txt, err := ioutil.ReadFile(addr)
+	txt, err := os.ReadFile(addr)
+	util.MustNoErr(json.Unmarshal(txt, &list))
+
 	// fmt.Println(list)
-	return faddr, list, nil
+	return addr, list, nil
 }
 
 // 删除资源
@@ -154,7 +146,7 @@ func DelSong(name string) {
 		}
 	}()
 
-	faddr, list, err := GetIgnoreDetail()
+	addr, list, err := GetIgnoreDetail()
 	list = append(list, name)
 	bts, err := json.Marshal(list)
 	if err != nil {
@@ -162,7 +154,7 @@ func DelSong(name string) {
 	}
 	// fmt.Println("bts::", string(bts))
 
-	f, err := os.OpenFile(faddr, os.O_RDWR, 0)
+	f, err := os.OpenFile(addr, os.O_RDWR, 0)
 	if err != nil {
 		return
 	}

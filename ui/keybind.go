@@ -98,6 +98,7 @@ func enter(_ *gocui.Gui, v *gocui.View) (err error) {
 	cyline, _ := v.Line(cy)
 	// Log(cyline)
 	event.Evt.Emit("CHOOSE", cyline)
+	event.ChooseName <- cyline
 	return
 }
 

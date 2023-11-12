@@ -11,3 +11,5 @@ fi
 
 go run .
 # go run -race .
+
+# ./player

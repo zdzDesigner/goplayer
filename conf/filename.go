@@ -45,3 +45,10 @@ func NextIndex(name string) int {
 	}
 	return index
 }
+func PrevIndex(name string) int {
+	index := Index(name) - 1
+	if index == -1 {
+		index = len(AUDIO_NAMES) - 1
+	}
+	return index
+}

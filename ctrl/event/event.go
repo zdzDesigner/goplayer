@@ -2,13 +2,21 @@ package event
 
 import "sync"
 
+var ChooseName = make(chan string)
+
 var Evt PubSuber
 
 func init() {
 	Evt = NewPubSub()
 }
 
-func StringVal(it interface{}) string {
+func NewPubSub() PubSuber {
+	return &PubSub{
+		pool: make(map[string][]Handler),
+	}
+}
+
+func StringVal(it any) string {
 	return it.(string)
 }
 
@@ -21,16 +29,20 @@ func NewNext(name string, index int) *next {
 	return &next{name, index}
 }
 
-func NextVal(it interface{}) (string, int) {
+func NextVal(it any) (string, int) {
 	n := it.(*next)
 	return n.name, n.index
 }
 
-type Handler func(interface{})
+type H interface {
+	string | next
+}
+
+type Handler func(any)
 
 type PubSuber interface {
 	On(string, Handler)
-	Emit(string, interface{})
+	Emit(string, any)
 }
 
 type PubSub struct {
@@ -44,7 +56,7 @@ func (ps *PubSub) On(key string, handler Handler) {
 	ps.pool[key] = append(ps.pool[key], handler)
 }
 
-func (ps *PubSub) Emit(key string, val interface{}) {
+func (ps *PubSub) Emit(key string, val any) {
 	ps.Lock()
 	handlers := ps.pool[key]
 	ps.Unlock()
@@ -55,11 +67,5 @@ func (ps *PubSub) Emit(key string, val interface{}) {
 	// copy(copyHands, handlers)
 	for _, handler := range handlers {
 		handler(val)
-	}
-}
-
-func NewPubSub() PubSuber {
-	return &PubSub{
-		pool: make(map[string][]Handler),
 	}
 }

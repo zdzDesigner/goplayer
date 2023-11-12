@@ -1,26 +1,34 @@
 package audio
 
 import (
+	// "fmt"
 	"os"
+
 	"player/conf"
 	"player/ctrl/event"
 	"player/ui"
 	"sync"
 	"time"
 
-	"github.com/faiface/beep"
-	"github.com/faiface/beep/mp3"
-	"github.com/faiface/beep/speaker"
+	"github.com/gopxl/beep"
+	// "github.com/gopxl/beep/effects"
+	"github.com/gopxl/beep/mp3"
+	"github.com/gopxl/beep/speaker"
 )
 
 var (
 	ctrl     *beep.Ctrl
 	m        sync.Mutex
-	Force    = make(chan struct{}, 1) // 强制结束,Force 外部信号停止内部执行
+	Force    = make(chan struct{}, 0) // 强制结束,Force 外部信号停止内部执行
 	PlayName = ""
+	isinit   = false
+	isplay   = false
 )
 
 func Music(name string) {
+	if isplay {
+		Stop()
+	}
 	if Play(name) {
 		event.Evt.Emit("NEXT", event.NewNext(conf.PrifixFileName(PlayName), -1))
 	}
@@ -29,10 +37,11 @@ func Music(name string) {
 // 播放
 func Play(name string) (ok bool) {
 	var err error
-	finish := make(chan struct{}, 1) // 单曲完成播放
+	finish := make(chan struct{}, 0) // 单曲完成播放
 	defer func() {
+		isplay = false
+		speaker.Clear()
 		if err != nil {
-			speaker.Close()
 			ok = true
 		}
 	}()
@@ -53,11 +62,11 @@ func Play(name string) (ok bool) {
 	}
 	defer file.Close()
 
-	stm, bfmt, err := mp3.Decode(file)
+	streamer, format, err := mp3.Decode(file)
 	if err != nil {
 		return false
 	}
-	defer stm.Close()
+	defer streamer.Close()
 
 	// go func() {
 	// time.Sleep(time.Second * 2)
@@ -68,53 +77,67 @@ func Play(name string) (ok bool) {
 	// }()
 
 	// 采样率
-	if err = speaker.Init(bfmt.SampleRate, bfmt.SampleRate.N(time.Second/10)); err != nil {
-		return false
+	if isinit == false {
+		if err = speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/30)); err != nil {
+			return false
+		}
+		isinit = true
 	}
 
-	ctrl = &beep.Ctrl{Streamer: stm}
+	ctrl = &beep.Ctrl{Streamer: beep.Loop(1, streamer)}
+	// volume := &effects.Volume{Streamer: streamer, Base: 2}
+	// speaker.Play(volume)
 
-	speaker.Play(ctrl, beep.StreamerFunc(func(_ [][2]float64) (n int, ok bool) {
-		if stm.Position()%100 == 0 {
-			seek := stm.Position()
-			total := stm.Len()
+	// go func() {
+	// 	time.Sleep(time.Second * 5)
+	//
+	// 	speaker.Lock()
+	// 	streamer.Seek(streamer.Len() - 100)
+	// 	speaker.Unlock()
+	// }()
+
+	speaker.Play(streamer, beep.StreamerFunc(func(_ [][2]float64) (n int, ok bool) {
+		if streamer.Position()%100 == 0 {
+			seek := streamer.Position()
+			total := streamer.Len()
 			ui.Nui.Update()
-			// ui.Log.Update(fmt.Sprintf("%d%s", seek*100/total, "%"))
 			ui.Log.Progress(seek * 100 / total)
+
+			// ui.Log.Update(fmt.Sprintf("%d%s", seek*100/total, "%"))
 		}
 		// err = stm.Seek(stm.Len() - 80000)
 		// if err != nil {
 		// 	ui.Log("len", stm.Len(), "position:", stm.Position(), err.Error())
 		// }
-		if stm.Position()+2000 >= stm.Len() {
+		if streamer.Position()+2000 >= streamer.Len() {
 			finish <- struct{}{}
 			return 0, false
 		}
 		return 0, true
 	}))
 
-	// beep.Callback(func() {
-	// finish <- struct{}{}
-	// })
-
 	// 播放完成
 	// speaker.Play(beep.Seq(stm, beep.Callback(func() {
 	// 	finish <- struct{}{}
 	// })))
+	isplay = true
 
 	select {
 	case <-finish:
+		// fmt.Println("============finish=============")
 		return true
 	case <-Force:
+		// fmt.Println("============Force=============")
 		return false
 	}
 }
 
 // 停止
 func Stop() {
-	if cap(Force) > len(Force) {
-		Force <- struct{}{} // 强制结束
-	}
+	// fmt.Println(cap(Force), len(Force))
+	// if cap(Force) > len(Force) {
+	Force <- struct{}{} // 强制结束
+	// }
 }
 
 // 暂停

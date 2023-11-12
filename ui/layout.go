@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"player/conf"
 	"player/lib/gocui"
+	"sync"
 	"time"
 )
 
@@ -23,6 +24,7 @@ type Layout struct {
 	g     *gocui.Gui
 	listV *gocui.View
 	names []string
+	mu    sync.Mutex
 }
 
 func (l *Layout) Manage(*gocui.Gui) (err error) {
@@ -32,7 +34,10 @@ func (l *Layout) Manage(*gocui.Gui) (err error) {
 }
 
 func (l *Layout) CursorIndex(y int) (err error) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
 	Nui.Update()
+	// fmt.Println(y)
 	return KeyIndex(l.g, l.listV, y)
 }
 
