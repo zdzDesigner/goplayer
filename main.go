@@ -16,26 +16,32 @@ import (
 	"time"
 )
 
-var name = make(chan string, 1)
-
-var names []string
 
 func main() {
 	// go pprof()
 	// 歌曲列表
-	names = conf.List()
+	names := conf.List()
 	fmt.Println(names)
 
 	// 选择一首
 	event.Evt.On("CHOOSE", func(t any) {
 		name := event.StringVal(t)
-		// audio.Stop()
 		go audio.Music(conf.FilePath(name))
-
 		ui.Log(name)
 		// ui.Log("0", "...")
 	})
 
+	// 第一首
+	event.Evt.On("TOP", func(t any) {
+		go audio.Music(names[0])
+		ui.Nui.Layout.CursorIndex(0)
+	})
+	// 最后一首
+	event.Evt.On("BOTTOM", func(t any) {
+		lastindex := len(names) - 1
+		go audio.Music(names[lastindex])
+		ui.Nui.Layout.CursorIndex(lastindex)
+	})
 	// 上一首
 	event.Evt.On("PREV", func(t any) {
 		name, index := event.NextVal(t)
@@ -43,16 +49,8 @@ func main() {
 			index = conf.PrevIndex(name)
 			name = names[index]
 		}
-		// audio.Stop()
-		// time.Sleep(time.Second * 3)
-		// fmt.Println("index:",index)
 		go audio.Music(name)
-
-		// return
 		ui.Nui.Layout.CursorIndex(index)
-		// ui.Log(conf.PrifixFileName(name))
-		// ui.Log(name, "...")
-		// ui.Log("defer NEXT", name, index)
 	})
 	// 下一首
 	event.Evt.On("NEXT", func(t any) {
@@ -61,11 +59,7 @@ func main() {
 			index = conf.NextIndex(name)
 			name = names[index]
 		}
-		// time.Sleep(time.Second * 3)
-		// fmt.Println("index:",index)
 		go audio.Music(name)
-
-		// return
 		ui.Nui.Layout.CursorIndex(index)
 		// ui.Log(conf.PrifixFileName(name))
 		// ui.Log(name, "...")
@@ -133,9 +127,9 @@ func serialCtrl() {
 		} else if data == "left" {
 			throttler.Do(func() { event.Evt.Emit("PREV", event.NewNext(conf.PrifixFileName(audio.PlayName), -1)) })
 		} else if data == "top" {
-			throttler.Do(func() { event.Evt.Emit("TOP", event.NewNext(conf.PrifixFileName(audio.PlayName), -1)) })
+			throttler.Do(func() { event.Evt.Emit("TOP", nil) })
 		} else if data == "bottom" {
-			throttler.Do(func() { event.Evt.Emit("BOTTOM", event.NewNext(conf.PrifixFileName(audio.PlayName), -1)) })
+			throttler.Do(func() { event.Evt.Emit("BOTTOM", nil) })
 		}
 
 	}
