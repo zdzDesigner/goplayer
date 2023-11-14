@@ -1,7 +1,6 @@
 package audio
 
 import (
-	// "fmt"
 	"os"
 
 	"player/conf"
@@ -11,7 +10,6 @@ import (
 	"time"
 
 	"github.com/gopxl/beep"
-	// "github.com/gopxl/beep/effects"
 	"github.com/gopxl/beep/mp3"
 	"github.com/gopxl/beep/speaker"
 )

@@ -64,8 +64,7 @@ func cacheAudioList(list []string) (names []string) {
 
 func runtimeAudioList(list []string) (names []string) {
 	var queueNames []string
-	deepDir(DIR_ASSETS, func(name, dir string) {
-
+	err := deepDir(DIR_ASSETS, func(name, dir string) {
 		if !validExt(name) {
 			return
 		}
@@ -75,6 +74,9 @@ func runtimeAudioList(list []string) (names []string) {
 			queueNames = append(queueNames, fmt.Sprintf("%s/%s", dir, name))
 		}
 	})
+	if err != nil {
+		panic(err)
+	}
 	for _, index := range util.RandomMutil(len(queueNames), 0, len(queueNames)-1) {
 		names = append(names, queueNames[index])
 	}

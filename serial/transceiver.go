@@ -96,6 +96,7 @@ func parse(session string, data []byte) (int, string, error) {
 		if v > 230 {
 			ret = "bottom"
 		}
+    ret = "reset"
 	}
 
 	return 0, ret, nil

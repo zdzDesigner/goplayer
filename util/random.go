@@ -1,6 +1,7 @@
 package util
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 )
@@ -27,6 +28,7 @@ func RandomMutil(count int, args ...int) []int {
 	if max-min < count {
 		count = max - min
 	}
+	fmt.Println(count)
 	arr := make([]int, 0, count)
 	newarr := make([]int, 0, count)
 	for i := min; i <= max; i++ {
@@ -43,6 +45,7 @@ func RandomMutil(count int, args ...int) []int {
 
 // Random 随机数 =>
 func crandom(args ...int) (min, max int) {
+  // fmt.Println("args::",args)
 	if len(args) == 2 {
 		min, max = args[0], args[1]
 	} else if len(args) == 1 {

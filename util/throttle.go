@@ -6,7 +6,7 @@ import (
 )
 
 type Throttler interface {
-	Do(f func())
+	Do(f func(), b bool)
 }
 
 func NewThrottler(duration time.Duration) Throttler {
@@ -22,7 +22,7 @@ type throttle struct {
 }
 
 // Do is Throttler implement
-func (t *throttle) Do(f func()) {
+func (t *throttle) Do(f func(), isafter bool) {
 	t.m.Lock()
 	defer t.m.Unlock()
 	t.once.Do(func() {
@@ -30,8 +30,13 @@ func (t *throttle) Do(f func()) {
 			time.Sleep(t.duration)
 			t.m.Lock()
 			defer t.m.Unlock()
+			if isafter {
+				f()
+			}
 			t.once = sync.Once{}
 		}()
-		f()
+		if !isafter {
+			f()
+		}
 	})
 }

@@ -2,20 +2,16 @@ package main
 
 import (
 	"fmt"
-	// "os"
-	// "os/signal"
 	"player/audio"
 	"player/conf"
 	"player/ctrl"
 	"player/ctrl/event"
 	"player/serial"
-	// "syscall"
 
 	"player/ui"
 	"player/util"
 	"time"
 )
-
 
 func main() {
 	// go pprof()
@@ -113,23 +109,32 @@ func main() {
 func serialCtrl() {
 	throttler := util.NewThrottler(time.Millisecond * 500)
 
-	serialer, err := serial.NewSerialer("", &serial.Config{Name: "/dev/ttyUSB0", Baud: 115200})
+	// serialer, err := serial.NewSerialer("", &serial.Config{Name: "/dev/ttyUSB0", Baud: 115200})
+	serialer, err := serial.NewSerialer("", &serial.Config{Name: "/dev/ttyUSB1", Baud: 115200})
 	if err != nil {
 		return
 	}
+	rightcount := 0
 	for {
 		data, err := serialer.Request("", nil)
 		if err != nil {
 			continue
 		}
 		if data == "right" {
-			throttler.Do(func() { event.Evt.Emit("NEXT", event.NewNext(conf.PrifixFileName(audio.PlayName), -1)) })
+			rightcount++
+			throttler.Do(func() {
+				fmt.Println(rightcount)
+				rightcount = 0
+				// event.Evt.Emit("NEXT", event.NewNext(conf.PrifixFileName(audio.PlayName), -1))
+			}, true)
 		} else if data == "left" {
-			throttler.Do(func() { event.Evt.Emit("PREV", event.NewNext(conf.PrifixFileName(audio.PlayName), -1)) })
+			throttler.Do(func() { event.Evt.Emit("PREV", event.NewNext(conf.PrifixFileName(audio.PlayName), -1)) }, false)
 		} else if data == "top" {
-			throttler.Do(func() { event.Evt.Emit("TOP", nil) })
+			throttler.Do(func() { event.Evt.Emit("TOP", event.NewNext(conf.PrifixFileName(audio.PlayName), -1)) }, false)
 		} else if data == "bottom" {
-			throttler.Do(func() { event.Evt.Emit("BOTTOM", nil) })
+			throttler.Do(func() { event.Evt.Emit("BOTTOM", event.NewNext(conf.PrifixFileName(audio.PlayName), -1)) }, false)
+		} else {
+			fmt.Println("reset")
 		}
 
 	}
