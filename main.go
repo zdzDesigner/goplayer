@@ -94,48 +94,89 @@ func main() {
 	go audio.Music(names[0])
 	go ctrl.ListenGlobal()
 	go serialCtrl()
-	// serialCtrl()
 
 	// 视图
 	ui.View(names)
+
+}
+
+func main2() {
+	serialCtrl()
 
 	// sigs := make(chan os.Signal, 1)
 	// signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
 	//
 	// <-sigs
-
 }
 
 func serialCtrl() {
 	throttler := util.NewThrottler(time.Millisecond * 500)
 
 	// serialer, err := serial.NewSerialer("", &serial.Config{Name: "/dev/ttyUSB0", Baud: 115200})
-	serialer, err := serial.NewSerialer("", &serial.Config{Name: "/dev/ttyUSB1", Baud: 115200})
+	// serialer, err := serial.NewSerialer("", &serial.Config{Name: "/dev/ttyUSB1", Baud: 115200})
+	// serialer, err := serial.NewSerialer("", &serial.Config{Name: "/dev/ttyCH341USB1", Baud: 115200})
+	// serialer, err := serial.NewSerialer("", &serial.Config{Name: "/dev/ttyCH341USB2", Baud: 115200})
+	serialer, err := serial.NewSerialer("", &serial.Config{Name: "/dev/ttyCH341USB0", Baud: 115200})
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
-	rightcount := 0
+	count := 0
 	for {
 		data, err := serialer.Request("", nil)
 		if err != nil {
 			continue
 		}
-		if data == "right" {
-			rightcount++
-			throttler.Do(func() {
-				fmt.Println(rightcount)
-				rightcount = 0
-				// event.Evt.Emit("NEXT", event.NewNext(conf.PrifixFileName(audio.PlayName), -1))
-			}, true)
-		} else if data == "left" {
-			throttler.Do(func() { event.Evt.Emit("PREV", event.NewNext(conf.PrifixFileName(audio.PlayName), -1)) }, false)
-		} else if data == "top" {
-			throttler.Do(func() { event.Evt.Emit("TOP", event.NewNext(conf.PrifixFileName(audio.PlayName), -1)) }, false)
-		} else if data == "bottom" {
-			throttler.Do(func() { event.Evt.Emit("BOTTOM", event.NewNext(conf.PrifixFileName(audio.PlayName), -1)) }, false)
-		} else {
-			fmt.Println("reset")
-		}
+		// fmt.Println("-----------------")
+
+		count++
+		throttler.Do(func() {
+			// fmt.Println(data, count)
+			if data == "right" {
+				event.Evt.Emit("NEXT", event.NewNext(conf.PrifixFileName(audio.PlayName), -1))
+			}
+			if data == "left" {
+				event.Evt.Emit("PREV", event.NewNext(conf.PrifixFileName(audio.PlayName), -1))
+			}
+			if data == "top" {
+				event.Evt.Emit("TOP", event.NewNext(conf.PrifixFileName(audio.PlayName), -1))
+			}
+			if data == "bottom" {
+				event.Evt.Emit("BOTTOM", event.NewNext(conf.PrifixFileName(audio.PlayName), -1))
+			}
+			count = 0
+		}, true)
+		// if data == "right" {
+		// 	count++
+		// 	throttler.Do(func() {
+		// 		fmt.Println("right", count)
+		// 		count = 0
+		// 		// event.Evt.Emit("NEXT", event.NewNext(conf.PrifixFileName(audio.PlayName), -1))
+		// 	}, true)
+		// } else if data == "left" {
+		// 	count++
+		// 	throttler.Do(func() {
+		// 		fmt.Println("left", count)
+		// 		count = 0
+		// 		event.Evt.Emit("PREV", event.NewNext(conf.PrifixFileName(audio.PlayName), -1))
+		// 	}, false)
+		// } else if data == "top" {
+		// 	count++
+		// 	throttler.Do(func() {
+		// 		fmt.Println("top", count)
+		// 		count = 0
+		// 		event.Evt.Emit("TOP", event.NewNext(conf.PrifixFileName(audio.PlayName), -1))
+		// 	}, false)
+		// } else if data == "bottom" {
+		// 	count++
+		// 	throttler.Do(func() {
+		// 		fmt.Println("bottom", count)
+		// 		count = 0
+		// 		event.Evt.Emit("BOTTOM", event.NewNext(conf.PrifixFileName(audio.PlayName), -1))
+		// 	}, false)
+		// } else {
+		// 	fmt.Println("reset")
+		// }
 
 	}
 

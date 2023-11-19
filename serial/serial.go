@@ -3,7 +3,8 @@ package serial
 import (
 	"bufio"
 	"encoding/json"
-	// "fmt"
+
+	"fmt"
 
 	"github.com/tarm/serial"
 )
@@ -82,12 +83,18 @@ func listen(port *serial.Port, lineHook LineHookFunc) error {
 	// fmt.Println("read serial")
 	buf := bufio.NewReader(port)
 	for {
+		// fmt.Println(buf.ReadByte())
+		// fmt.Println(buf.ReadByte())
+		// fmt.Println(buf.ReadByte())
+		// fmt.Println(buf.ReadByte())
 		// line, err := buf.ReadString('\n')
 		// line = strings.TrimSpace(line)
 		line, _, err := buf.ReadLine()
 		if err != nil {
+			fmt.Println(err)
 			return err
 		}
+		// fmt.Println("-----------", line)
 		lineHook(line)
 		// fmt.Println(string(line))
 	}

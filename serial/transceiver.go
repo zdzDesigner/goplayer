@@ -1,8 +1,17 @@
 package serial
 
 import (
+	// "encoding/hex"
 	"encoding/json"
 	"errors"
+	"fmt"
+
+	// "unicode/utf8"
+
+	// "player/util"
+
+	// "log"
+
 	// "fmt"
 	"math"
 	"time"
@@ -73,12 +82,34 @@ func (t *Transceive[T]) Request(topic string, payload map[string]any, send sendF
 
 func parse(session string, data []byte) (int, string, error) {
 	var res []int
+
+	// fmt.Println("data:", string(data), len(data))
+	if len(data) == 2 {
+		data = []byte(fmt.Sprintf("[%d,%d]", data[0], data[1]))
+	}
+	// fmt.Println(hex.DecodeString(string(data)))
+	// data, err := util.Gbk2Utf8(data)
+	// if err != nil {
+	// 	return 0, "", err
+	// }
+	// fmt.Println(data[0], data[1], int(data[0]))
+	// fmt.Println(utf8.DecodeRune(data))
+
+	// data = []byte{uint8(data[0]), uint8(data[1])}
+	// data = []byte{0x81, 0x80}
+	// data = []byte{81, 80}
 	if err := json.Unmarshal(data, &res); err != nil {
+		// fmt.Println(err)
+		// log.Printf("error decoding sakura response: %v", err)
+		// if e, ok := err.(*json.SyntaxError); ok {
+		// 	log.Printf("syntax error at byte offset %d", e.Offset)
+		// }
+		// log.Printf("sakura response: %q", data)
 		return 0, "", err
 	}
 
 	// fmt.Println(res)
-	ret := ""
+	ret := "reset"
 	h := res[0]
 	v := res[1]
 
@@ -96,7 +127,6 @@ func parse(session string, data []byte) (int, string, error) {
 		if v > 230 {
 			ret = "bottom"
 		}
-    ret = "reset"
 	}
 
 	return 0, ret, nil
